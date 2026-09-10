@@ -1,0 +1,59 @@
+@model AccessDB.Models.Reservacion
+
+@{
+    ViewData["Title"] = $"Eliminar - Reservación {Model.CodigoReserva}";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <a href="@Url.Action("Index", "Reservacion")" class="btn btn-ghost">← Volver</a>
+                <h1>Confirmar Eliminación de Reservación</h1>
+            </div>
+
+            <div class="alert alert-danger" role="alert">
+                <strong>⚠️ Atención:</strong> Esta acción eliminará la reservación seleccionada.
+            </div>
+
+            <div class="surface mb-4">
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Código</label>
+                    <p class="h5">@Model.CodigoReserva</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Cliente</label>
+                    <p class="h5">@Model.IdCliente</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Habitación</label>
+                    <p class="h5">@Model.IdHabitacion</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Fechas</label>
+                    <p>@Model.FechaIngreso.ToString("dd/MM/yyyy") - @Model.FechaSalida.ToString("dd/MM/yyyy")</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Monto total</label>
+                    <p class="h5 text-success">@Model.Total.ToString("C")</p>
+                </div>
+            </div>
+
+            <form asp-action="Delete" asp-controller="Reservacion" method="post" class="d-grid gap-2 d-sm-flex">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <button type="submit" class="btn btn-danger flex-sm-grow-1">🗑️ Sí, Eliminar reservación</button>
+                <a href="@Url.Action("Index", "Reservacion")" class="btn btn-outline-custom flex-sm-grow-1">✕ Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    code { background: rgba(45,212,191,0.08); color: var(--primary); padding: 0.25rem 0.5rem; border-radius: 4px; }
+</style>

@@ -1,0 +1,144 @@
+@model IEnumerable<AccessDB.Models.Cliente>
+
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+}
+@inject MVC.Interfaces.IClienteApiService clienteService
+
+<div class="container-fluid mt-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Gestión de Clientes</h1>
+            <p class="text-muted-custom">Total registrados: <strong>@ViewBag.TotalClientes</strong></p>
+        </div>
+        <a href="@Url.Action("Create", "Clientes")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Cliente
+        </a>
+    </div>
+
+    <!-- Messages -->
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>✓ Éxito:</strong> @TempData["Exito"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>⚠️ Error:</strong> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search Section -->
+    <div class="surface mb-4">
+        <form method="get" action="@Url.Action("Index", "Clientes")" class="row g-3">
+            <div class="col-md-8">
+                <input type="text" name="buscar" class="form-control" placeholder="Buscar por cédula..." 
+                       value="@ViewData["BusquedaTermino"]">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                <a href="@Url.Action("Index", "Clientes")" class="btn btn-ghost w-100 mt-2">Limpiar</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Clients Table -->
+    @if (ViewBag.TotalClientes == 0)
+    {
+        <div class="surface text-center py-5">
+            <p class="text-muted-custom mb-3">No hay clientes registrados</p>
+            <a href="@Url.Action("Create", "Clientes")" class="btn btn-primary">
+                Registrar el primer cliente
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombre Completo</th>
+                        <th>Fecha Nacimiento</th>
+                        <th>Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cliente in Model)
+                    {
+                        <tr>
+                            <td>
+                                <code>@cliente.Cedula</code>
+                            </td>
+                            <td>@{
+                                var c = await clienteService.ObtenerPorIdAsync(cliente.Id);}@($"{c?.Nombre} {c?.PrimerApellido} {c?.SegundoApellido}".Trim())
+                            <td>
+                                @cliente.FechaNacimiento.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                <small class="text-muted-custom">@cliente.FechaRegistro.ToString("dd/MM/yyyy")</small>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Details", "Clientes", new { id = cliente.Id })" 
+                                       class="btn btn-sm btn-outline-custom" title="Ver detalles">
+                                        👁️ Ver
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Clientes", new { id = cliente.Id })" 
+                                       class="btn btn-sm btn-outline-custom" title="Editar">
+                                        ✏️ Editar
+                                    </a>
+                                    <a href="@Url.Action("Delete", "Clientes", new { id = cliente.Id })" 
+                                       class="btn btn-sm btn-outline-custom" title="Eliminar">
+                                        🗑️ Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<style>
+    .table {
+        margin-top: 0;
+    }
+
+    .table thead th {
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 1rem 0.75rem;
+    }
+
+    .table tbody td {
+        padding: 0.9rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    .btn-group .btn {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.85rem;
+    }
+
+    code {
+        background: rgba(45, 212, 191, 0.08);
+        color: var(--primary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+</style>

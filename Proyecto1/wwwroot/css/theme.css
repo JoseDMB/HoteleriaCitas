@@ -1,0 +1,72 @@
+:root{
+  --bg: #121416; /* fondo general oscuro pero suave */
+  --surface: #1b1e21; /* superficies de contenedores */
+  --card: #202428; /* cartas */
+  --text: #e6eef3; /* texto principal */
+  --muted: #a6b0b6; /* texto secundario */
+  --primary: #2dd4bf; /* color principal (turquesa suave) */
+  --primary-600: #20b8a7;
+  --accent: #7c83ff; /* color secundario */
+  --danger: #ff6b6b;
+}
+
+/* Layout general */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.container {
+  max-width: 1100px;
+}
+
+/* Navbar */
+.navbar {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.navbar .navbar-brand {
+  color: var(--text);
+  font-weight: 600;
+}
+.navbar .nav-link {
+  color: var(--muted) !important;
+}
+.navbar .nav-link:hover, .navbar .nav-link:focus {
+  color: var(--text) !important;
+}
+
+/* Main card surfaces */
+.card, .border-top, .border-bottom, .modal-content {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(255,255,255,0.03) !important;
+}
+
+/* Footer */
+.footer {
+  background: transparent;
+  color: var(--muted);
+}
+
+/* Small utility helpers */
+.text-muted-custom { color: var(--muted) !important; }
+.surface {
+  background-color: var(--surface);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+/* Links */
+a { color: var(--primary); }
+a:hover { color: var(--primary-600); text-decoration: underline; }
+
+/* Cards spacing */
+.app-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+
+/* Forms layout */
+.form-section { background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent); padding: 1rem; border-radius: 8px; }
+
+/* Visual emphasis */
+.kicker { color: var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:0.08em; font-size:0.75rem }

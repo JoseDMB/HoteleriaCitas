@@ -1,0 +1,128 @@
+@model AccessDB.Models.Cliente
+
+@{
+    ViewData["Title"] = $"Detalles - {Model.Nombre}";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <a href="@Url.Action("Index", "Clientes")" class="btn btn-ghost">← Volver</a>
+                    <h1>Detalles del Cliente</h1>
+                </div>
+            </div>
+
+            <!-- Main Information Card -->
+            <div class="surface mb-4">
+                <div class="row mb-4 pb-3 border-bottom">
+                    <div class="col-md-8">
+                        <h3>@Model.Nombre</h3>
+                        <p class="text-muted-custom">ID: @Model.Id</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="badge-custom d-inline-block">
+                            Registrado
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents Section -->
+                <div class="mb-4">
+                    <h5 class="mb-3">
+                        <span class="kicker">📋</span> Documentos de Identidad
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Cédula</label>
+                            <p class="h6">
+                                <code>@Model.Cedula</code>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Information Section -->
+                <div class="mb-4 pb-3 border-top pt-3">
+                    <h5 class="mb-3">
+                        <span class="kicker">👤</span> Información Personal
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Nombre</label>
+                            <p class="h6">@Model.Nombre</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Primer Apellido</label>
+                            <p class="h6">@Model.PrimerApellido</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Segundo Apellido</label>
+                            <p class="h6">
+                                @if (!string.IsNullOrEmpty(Model.SegundoApellido))
+                                {
+                                    @Model.SegundoApellido
+                                }
+                                else
+                                {
+                                    <span class="text-muted-custom">---</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Fecha de Nacimiento</label>
+                            <p class="h6">@Model.FechaNacimiento.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metadata Section -->
+                <div class="pb-3 border-top pt-3">
+                    <h5 class="mb-3">
+                        <span class="kicker">📅</span> Registro
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted-custom">Fecha de Registro</label>
+                            <p class="text-muted-custom small">@Model.FechaRegistro.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 d-sm-flex">
+                <a href="@Url.Action("Edit", "Clientes", new { id = Model.Id })" class="btn btn-primary flex-sm-grow-1">
+                    ✏️ Editar
+                </a>
+                <a href="@Url.Action("Delete", "Clientes", new { id = Model.Id })" class="btn btn-outline-custom flex-sm-grow-1">
+                    🗑️ Eliminar
+                </a>
+                <a href="@Url.Action("Index", "Clientes")" class="btn btn-ghost flex-sm-grow-1">
+                    ← Volver al Listado
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    code {
+        background: rgba(45, 212, 191, 0.08);
+        color: var(--primary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+
+    .border-top,
+    .border-bottom {
+        border-color: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    .h6 {
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+</style>

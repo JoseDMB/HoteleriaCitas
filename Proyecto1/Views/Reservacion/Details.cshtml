@@ -1,0 +1,106 @@
+@model AccessDB.Models.Reservacion
+@using MVC.Services
+
+@{
+    ViewData["Title"] = $"Detalles - Reservación {Model.CodigoReserva}";
+}
+
+@{
+    ViewData["Title"] = $"Detalles - Reservación {Model.CodigoReserva}";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <a href="@Url.Action("Index", "Reservacion")" class="btn btn-ghost">← Volver</a>
+                    <h1>Detalles de Reservación</h1>
+                </div>
+                <p class="text-muted-custom">Código: <code>@Model.CodigoReserva</code></p>
+            </div>
+
+            <!-- Details Section -->
+            <div class="surface mb-4">
+                <div class="mb-4 pb-4" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="mb-3">
+                        <span class="kicker">🏨</span> Información de la Reservación
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Código</label>
+                            <p class="h5">@Model.CodigoReserva</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Cliente</label>
+                            <p class="h5">@(ViewBag.NombreCliente ?? Model.IdCliente)</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Habitación</label>
+                            <p class="h5">@Model.IdHabitacion</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Fecha reservación</label>
+                            <p class="h5">@Model.FechaReserva.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4 pb-4" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="mb-3">
+                        <span class="kicker">💰</span> Información de Tarifas
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">Tarifa de reservación</label>
+                        <p class="h5 text-primary">@Model.TarifaReservacion.ToString("C",new System.Globalization.CultureInfo("en-US"))</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">Descuento</label>
+                        <p class="h5">@Model.Descuento %</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">Monto total (con IVA)</label>
+                        <p class="h5 text-success">@Model.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="mb-3">
+                        <span class="kicker">📄</span> Solicitudes y Estado
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">Solicitudes Especiales</label>
+                        <p>@(string.IsNullOrWhiteSpace(Model.Solicitudes) ? "--" : Model.Solicitudes)</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">Estado</label>
+                        <p>@Model.EstadoReservacion.ToString()</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 d-sm-flex">
+                <a href="@Url.Action("Edit", "Reservacion", new { id = Model.Id })" class="btn btn-primary flex-sm-grow-1">
+                    ✏️ Editar
+                </a>
+                <a href="@Url.Action("Delete", "Reservacion", new { id = Model.Id })" class="btn btn-outline-custom flex-sm-grow-1">
+                    🗑️ Eliminar
+                </a>
+                <a href="@Url.Action("Index", "Reservacion")" class="btn btn-ghost flex-sm-grow-1">
+                    ← Volver al listado
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

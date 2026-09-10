@@ -1,0 +1,18 @@
+# Set default behavior to automatically normalize line endings.
+* text=auto
+
+# Declare files that are safe to always normalize and use LF
+*.cs     text
+*.csproj text
+*.sln    text
+*.json   text
+*.cshtml text
+README.md text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.dll binary
+*.exe binary

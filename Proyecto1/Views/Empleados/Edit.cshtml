@@ -1,0 +1,360 @@
+@model AccessDB.Models.Empleado
+@using AccessDB.Models
+
+@{
+    ViewData["Title"] = $"Editar - {Model.Nombre} {Model.PrimerApellido}";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <a href="@Url.Action("Index", "Empleados")" class="btn btn-ghost">← Volver</a>
+                    <h1>Editar Empleado</h1>
+                </div>
+                <p class="text-muted-custom">@($"{Model.Nombre} {Model.PrimerApellido} {Model.SegundoApellido}".Trim()) - Cédula: <code>@Model.Cedula</code></p>
+            </div>
+
+            <!-- Messages -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>⚠️ Errores en el formulario:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Form Section -->
+            <div class="surface p-4">
+                <form asp-action="Edit" asp-controller="Empleados" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <!-- Document Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">📋</span> Documentos de Identidad
+                        </h5>
+
+                        <!-- Cedula -->
+                        <div class="mb-3">
+                            <label asp-for="Cedula" class="form-label">
+                                Cédula <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Cedula" type="text" class="form-control" placeholder="Ej: 1-1762-0994" 
+                                   maxlength="11" required>
+                            <span asp-validation-for="Cedula" class="text-danger small"></span>
+                            <small class="text-muted-custom d-block mt-1">Formato: X-XXXX-XXXX (11 dígitos)</small>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">👤</span> Información Personal
+                        </h5>
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label">
+                                Nombre <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Nombre" type="text" class="form-control" placeholder="Ej: Juan" required>
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Primer Apellido -->
+                        <div class="mb-3">
+                            <label asp-for="PrimerApellido" class="form-label">
+                                Primer Apellido <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="PrimerApellido" type="text" class="form-control" placeholder="Ej: García" required>
+                            <span asp-validation-for="PrimerApellido" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Segundo Apellido -->
+                        <div class="mb-3">
+                            <label asp-for="SegundoApellido" class="form-label">Segundo Apellido</label>
+                            <input asp-for="SegundoApellido" type="text" class="form-control" placeholder="Ej: López">
+                            <span asp-validation-for="SegundoApellido" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Fecha de Nacimiento -->
+                        <div class="mb-3">
+                            <label asp-for="FechaNacimiento" class="form-label">
+                                Fecha de Nacimiento <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="FechaNacimiento" type="date" class="form-control" required>
+                            <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Employment Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">💼</span> Información Laboral
+                        </h5>
+
+                        <!-- Categoría -->
+                        <div class="mb-3">
+                            <label asp-for="CategoriaId" class="form-label">
+                                Categoría <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="CategoriaId" class="form-control" required>
+                                <option value="">-- Selecciona una categoría --</option>
+                                @foreach (var cat in ViewBag.Categorias)
+                                {
+                                    <option value="@cat.Id">@cat.Nombre</option>
+                                }
+                            </select>
+                            <span asp-validation-for="CategoriaId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Salario Mensual -->
+                        <div class="mb-3">
+                            <label asp-for="SalarioMensual" class="form-label">
+                                Salario Mensual <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">₡</span>
+                                <input asp-for="SalarioMensual" type="text" class="form-control" placeholder="0.00" required>
+                            </div>
+                            <span asp-validation-for="SalarioMensual" class="text-danger small"></span>
+                            <small class="text-muted-custom d-block mt-1">Rango: 0.01 a 5,000,000</small>
+                        </div>
+
+                        <!-- Fecha de Ingreso -->
+                        <div class="mb-3">
+                            <label asp-for="FechaIngreso" class="form-label">
+                                Fecha de Ingreso <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="FechaIngreso" type="date" class="form-control" required>
+                            <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">📍</span> Ubicación Geográfica
+                        </h5>
+
+                        <!-- Provincia -->
+                        <div class="mb-3">
+                            <label asp-for="ProvinciaId" class="form-label">
+                                Provincia <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="ProvinciaId" class="form-control" id="provinciaSelect" required>
+                                <option value="">-- Selecciona una provincia --</option>
+                                @foreach (var prov in ViewBag.Provincias)
+                                {
+                                    <option value="@prov.Id">@prov.Nombre</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ProvinciaId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Cantón -->
+                        <div class="mb-3">
+                            <label asp-for="CantonId" class="form-label">
+                                Cantón <span class="text-danger">*</span>
+                            </label>
+
+                            <select asp-for="CantonId"
+                                    class="form-control"
+                                    id="cantonSelect"
+                                    required
+                                    disabled>
+                                <option value="">-- Primero selecciona una provincia --</option>
+                            </select>
+
+                            <span asp-validation-for="CantonId"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <!-- Distrito -->
+                        <div class="mb-3">
+                            <label asp-for="DistritoId" class="form-label">
+                                Distrito <span class="text-danger">*</span>
+                            </label>
+
+                            <select asp-for="DistritoId"
+                                    class="form-control"
+                                    id="distritoSelect"
+                                    required
+                                    disabled>
+                                <option value="">-- Primero selecciona un cantón --</option>
+                            </select>
+
+                            <span asp-validation-for="DistritoId"
+                                  class="text-danger small">
+                            </span>
+                        </div>
+
+                        <!-- Dirección Exacta -->
+                        <div class="mb-3">
+                            <label asp-for="Direccion" class="form-label">Dirección Exacta</label>
+                            <textarea asp-for="Direccion" class="form-control" rows="3" placeholder="Ej: Calle 5, entre avenida 2 y 4, edificio A"></textarea>
+                            <span asp-validation-for="Direccion" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <button type="submit" class="btn btn-primary flex-sm-grow-1">
+                            ✓ Guardar Cambios
+                        </button>
+                        <a href="@Url.Action("Index", "Empleados")" class="btn btn-outline-custom flex-sm-grow-1">
+                            ✕ Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Formatear cédula automáticamente
+        document.getElementById("Cedula").addEventListener("input", function (e) {
+            let valor = e.target.value.replace(/[^\d]/g, "");
+            if (valor.length <= 1) {
+                e.target.value = valor;
+            } else if (valor.length <= 5) {
+                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1);
+            } else if (valor.length <= 9) {
+                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5);
+            } else {
+                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5, 9);
+            }
+        });
+
+        // Permitir solo números en salario
+        document.getElementById("SalarioMensual").addEventListener("input", function (e) {
+            // Permitir solo números y punto
+            e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+
+            // Evitar múltiples puntos
+            const parts = e.target.value.split('.');
+            if (parts.length > 2) {
+                e.target.value = parts[0] + '.' + parts[1];
+            }
+        });
+    </script>
+
+    <script>
+        const provinciaSelect = document.getElementById("provinciaSelect");
+        const cantonSelect = document.getElementById("cantonSelect");
+        const distritoSelect = document.getElementById("distritoSelect");
+
+        provinciaSelect.addEventListener("change", async function() {
+
+            const provinciaId = this.value;
+
+            // Limpiar cantones
+            cantonSelect.innerHTML =
+                '<option value="">-- Selecciona un cantón --</option>';
+
+            // Limpiar distritos
+            distritoSelect.innerHTML =
+                '<option value="">-- Primero selecciona un cantón --</option>';
+
+            distritoSelect.disabled = true;
+
+            if (!provinciaId) {
+                cantonSelect.disabled = true;
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `/Empleados/ObtenerCantones?provinciaId=${provinciaId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error("Error al obtener los cantones");
+                }
+
+                const cantones = await response.json();
+
+                cantones.forEach(canton => {
+
+                    const option = document.createElement("option");
+
+                    option.value = canton.id;
+                    option.textContent = canton.nombre;
+
+                    cantonSelect.appendChild(option);
+                });
+
+                cantonSelect.disabled = false;
+
+            } catch (error) {
+
+                console.error(error);
+                cantonSelect.disabled = true;
+            }
+        });
+
+
+        cantonSelect.addEventListener("change", async function() {
+
+            const cantonId = this.value;
+
+            distritoSelect.innerHTML =
+                '<option value="">-- Selecciona un distrito --</option>';
+
+            if (!cantonId) {
+                distritoSelect.disabled = true;
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `/Empleados/ObtenerDistritos?cantonId=${cantonId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error("Error al obtener los distritos");
+                }
+
+                const distritos = await response.json();
+
+                distritos.forEach(distrito => {
+
+                    const option = document.createElement("option");
+
+                    option.value = distrito.id;
+                    option.textContent = distrito.nombre;
+
+                    distritoSelect.appendChild(option);
+                });
+
+                distritoSelect.disabled = false;
+
+            } catch (error) {
+
+                console.error(error);
+                distritoSelect.disabled = true;
+            }
+        });
+    </script>
+}

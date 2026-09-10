@@ -1,0 +1,155 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="py-5 mb-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-3">Sistema de Gestión</h1>
+            <p class="lead text-muted-custom">Administra todos tus registros</p>
+        </div>
+    </div>
+
+    <!-- Modules Grid -->
+    <div class="app-grid">
+        <!-- Clientes Module -->
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <span style="font-size: 2.5rem;">👥</span>
+                </div>
+                <h5 class="card-title mb-2">Gestión de Clientes</h5>
+                <p class="text-muted-custom small mb-3">
+                    Registra, edita y gestiona la información completa de tus clientes.
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <a href="@Url.Action("Index", "Clientes")" class="btn btn-primary flex-grow-1">
+                        Ver Clientes
+                    </a>
+                    <a href="@Url.Action("Create", "Clientes")" class="btn btn-outline-custom flex-grow-1">
+                        + Nuevo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empleados Module -->
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <span style="font-size: 2.5rem;">👨‍💼</span>
+                </div>
+                <h5 class="card-title mb-2">Gestión de Empleados</h5>
+                <p class="text-muted-custom small mb-3">
+                    Registra y administra la información de tu equipo de trabajo.
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <a href="@Url.Action("Index", "Empleados")" class="btn btn-primary flex-grow-1">
+                        Ver Empleados
+                    </a>
+                    <a href="@Url.Action("Create", "Empleados")" class="btn btn-outline-custom flex-grow-1">
+                        + Nuevo
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <span style="font-size: 2.5rem;">🏚</span>
+                </div>
+                <h5 class="card-title mb-2">Gestión de habitaciones</h5>
+                <p class="text-muted-custom small mb-3">
+                    Registra y administra la información de de las habitaciones.
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <a href="@Url.Action("Index", "Habitaciones")" class="btn btn-primary flex-grow-1">
+                        Ver Habitaciones
+                    </a>
+                    <a href="@Url.Action("Create", "Habitaciones")" class="btn btn-outline-custom flex-grow-1">
+                        + Nuevo
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <span style="font-size: 2.5rem;">🏨</span>
+                </div>
+                <h5 class="card-title mb-2">Gestión de reservaciones</h5>
+                <p class="text-muted-custom small mb-3">
+                    Realiza una reservación
+                </p>
+                <div class="btn-group w-100" role="group">
+                    <a href="@Url.Action("Index", "Reservacion")" class="btn btn-primary flex-grow-1">
+                        Ver reservaciones
+                    </a>
+                    <a href="@Url.Action("Create", "Reservacion")" class="btn btn-outline-custom flex-grow-1">
+                        + Nuevo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    <!-- Quick Stats -->
+   @*  <div class="row mt-5 pt-5">
+        <div class="col-md-4 mb-3">
+            <div class="surface text-center">
+                <div style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;">📊</div>
+                <h6 class="text-muted-custom mb-2">Estadísticas</h6>
+                <p class="h5 mb-0">Sistema actualizado</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="surface text-center">
+                <div style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;">⚙️</div>
+                <h6 class="text-muted-custom mb-2">Configuración</h6>
+                <p class="h5 mb-0">Personaliza tu cuenta</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="surface text-center">
+                <div style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;">❓</div>
+                <h6 class="text-muted-custom mb-2">Ayuda</h6>
+                <p class="h5 mb-0">Obtén soporte</p>
+            </div>
+        </div>
+    </div>*@
+</div> 
+
+<style>
+    .card {
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        border-color: rgba(45, 212, 191, 0.3);
+        box-shadow: 0 8px 24px rgba(45, 212, 191, 0.08);
+    }
+
+    .card.opacity-50 {
+        opacity: 0.5;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+    }
+
+    .surface {
+        padding: 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .surface:hover {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+    }
+</style>

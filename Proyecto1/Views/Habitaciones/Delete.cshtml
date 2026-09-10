@@ -1,0 +1,119 @@
+@model AccessDB.Models.Habitacion
+@using AccessDB.Models
+@{
+    ViewData["Title"] = $"Eliminar - Habitación {Model.NumeroHabitacion}";
+}
+
+@inject MVC.Interfaces.ITipoHabitacionService tipoHabitacionService
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Header -->
+            <div class="mb-4">
+                <a href="@Url.Action("Index", "Habitaciones")" class="btn btn-ghost mb-3">← Volver</a>
+                <h1>Confirmar Eliminación</h1>
+            </div>
+
+            <!-- Warning Alert -->
+            <div class="alert alert-danger" role="alert">
+                <strong>⚠️ Atención:</strong> Esta acción es irreversible y eliminará todos los datos de la habitación.
+            </div>
+
+            <!-- Habitacion Information -->
+            <div class="surface mb-4">
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Número de Habitación</label>
+                    <p class="h5">@Model.NumeroHabitacion</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Tipo de Habitación</label>
+                            <p>
+                        <span class="badge-custom">
+                            @((await tipoHabitacionService.ObtenerPorIdAsync(Model.TipoHabitacion))?.Nombre)
+                        </span>
+                    </p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">Tarifa por Noche</label>
+                    <p class="text-primary">$ @Model.TarifaxNoche.ToString("N2")</p>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted-custom">TV Satelital</label>
+                    <p>
+                        @if (Model.Tv_Satelital)
+                        {
+                            <span class="badge bg-success">✓ Disponible</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">✕ No disponible</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label text-muted-custom">Pendientes de Mantenimiento</label>
+                    @if (!string.IsNullOrWhiteSpace(Model.PendientesMantenimiento))
+                    {
+                        <p class="text-break mb-0">@Model.PendientesMantenimiento</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted-custom mb-0">--</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Confirmation Message -->
+            <div class="surface p-3 mb-4 bg-danger bg-opacity-10">
+                <p class="mb-0">
+                    <strong>¿Está seguro de que desea eliminar la habitación</strong> <code>@Model.NumeroHabitacion</code> <strong>?</strong>
+                </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <form asp-action="Delete" asp-controller="Habitaciones" method="post" class="d-grid gap-2 d-sm-flex">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <button type="submit" class="btn btn-danger flex-sm-grow-1">
+                    🗑️ Sí, Eliminar
+                </button>
+                <a href="@Url.Action("Index", "Habitaciones")" class="btn btn-outline-custom flex-sm-grow-1">
+                    ✕ Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-danger {
+        background-color: var(--danger);
+        border-color: var(--danger);
+        color: #E60E0E;
+    }
+
+    .btn-danger:hover {
+            background-color: #262626;
+    }
+
+    .bg-danger {
+        background-color: #262626
+    }
+
+    /* .bg-opacity-10 {
+        opacity: 0.1;
+    } */
+
+    code {
+        background: rgba(45, 212, 191, 0.08);
+        color: var(--primary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+    }
+</style>

@@ -1,0 +1,133 @@
+@model AccessDB.Models.Cliente
+
+@{
+    ViewData["Title"] = "Crear Nuevo Cliente";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <h1>Registrar Nuevo Cliente</h1>
+                <p class="text-muted-custom">Complete todos los campos obligatorios marcados con <span class="text-danger">*</span></p>
+            </div>
+
+            <!-- Messages -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>⚠️ Errores en el formulario:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Form Section -->
+            <div class="surface p-4">
+                <form asp-action="Create" asp-controller="Clientes" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <!-- Document Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">📋</span> Documentos de Identidad
+                        </h5>
+
+                        <!-- Cedula -->
+                        <div class="mb-3">
+                            <label asp-for="Cedula" class="form-label">
+                                Cédula <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Cedula" type="text" class="form-control" placeholder="Ej: 1-1762-0994" 
+                                   maxlength="11" required>
+                            <span asp-validation-for="Cedula" class="text-danger small"></span>
+                            <small class="text-muted-custom d-block mt-1">Formato: X-XXXX-XXXX (11 dígitos)</small>
+                        </div>
+                    </div>
+
+                    <!-- Personal Information Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">👤</span> Información Personal
+                        </h5>
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label">
+                                Nombre <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Nombre" type="text" class="form-control" placeholder="Ej: Juan" required>
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Primer Apellido -->
+                        <div class="mb-3">
+                            <label asp-for="PrimerApellido" class="form-label">
+                                Primer Apellido <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="PrimerApellido" type="text" class="form-control" placeholder="Ej: García" required>
+                            <span asp-validation-for="PrimerApellido" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Segundo Apellido -->
+                        <div class="mb-3">
+                            <label asp-for="SegundoApellido" class="form-label">Segundo Apellido</label>
+                            <input asp-for="SegundoApellido" type="text" class="form-control" placeholder="Ej: López">
+                            <span asp-validation-for="SegundoApellido" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Fecha de Nacimiento -->
+                        <div class="mb-3">
+                            <label asp-for="FechaNacimiento" class="form-label">
+                                Fecha de Nacimiento <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="FechaNacimiento" type="date" class="form-control" required>
+                            <span asp-validation-for="FechaNacimiento" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <button type="submit" class="btn btn-primary flex-sm-grow-1">
+                            ✓ Guardar Cliente
+                        </button>
+                        <a href="@Url.Action("Index", "Clientes")" class="btn btn-outline-custom flex-sm-grow-1">
+                            ✕ Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Formatear cédula automáticamente
+        document.getElementById("Cedula").addEventListener("input", function(e) {
+            let valor = e.target.value.replace(/[^\d]/g, "");
+            if (valor.length <= 1) {
+                e.target.value = valor;
+            } else if (valor.length <= 5) {
+                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1);
+            } else if (valor.length <= 9) {
+                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5);
+            } else {
+                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5, 9);
+            }
+        });
+    </script>
+}
+

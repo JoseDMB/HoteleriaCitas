@@ -1,0 +1,72 @@
+# Visual Studio and .NET
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build directories
+bin/
+obj/
+
+# Publish output
+publish/
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Visual Studio cache files
+*.VC.db
+*.VC.VC.opendb
+
+# Rider
+.idea/
+
+# IIS Express
+*.vspscc
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# Node
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# User secrets
+secrets.json
+
+# Generated files
+*.g.cs
+
+# Static web assets
+wwwroot/lib/
+
+# Ignore database files
+*.mdf
+*.ldf
+
+# Ignore publish profiles for CI
+*.pubxml.user
+
+# Keep README and project files tracked
+!README.md
+!*.sln
+!**/*.csproj
+!**/*.cs
+!**/*.cshtml
+!**/*.json
+
+# Ignore libraries installed in wwwroot (restoreable via LibMan/npm)
+wwwroot/lib/

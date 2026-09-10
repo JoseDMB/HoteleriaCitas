@@ -1,0 +1,113 @@
+@model AccessDB.Models.Habitacion
+@using AccessDB.Models
+@inject MVC.Interfaces.ITipoHabitacionService tipoHabitacionService
+
+@{
+    ViewData["Title"] = $"Detalles - Habitación {Model.NumeroHabitacion}";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <a href="@Url.Action("Index", "Habitaciones")" class="btn btn-ghost">← Volver</a>
+                    <h1>Detalles de Habitación</h1>
+                </div>
+                <p class="text-muted-custom">Número: <code>@Model.NumeroHabitacion</code></p>
+            </div>
+
+            <!-- Details Section -->
+            <div class="surface mb-4">
+                <!-- Basic Information -->
+                <div class="mb-4 pb-4" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="mb-3">
+                        <span class="kicker">🏨</span> Información Básica
+                    </h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Número de Habitación</label>
+                            <p class="h5">@Model.NumeroHabitacion</p>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted-custom">Tipo de Habitación</label>
+                            <p>
+                                <span class="badge-custom">
+                                    @((await tipoHabitacionService.ObtenerPorIdAsync(Model.TipoHabitacion))?.Nombre)
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing Information -->
+                <div class="mb-4 pb-4" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="mb-3">
+                        <span class="kicker">💰</span> Información de Tarifa
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">Tarifa por Noche</label>
+                        <p class="h5 text-primary">$ @Model.TarifaxNoche.ToString("N2")</p>
+                    </div>
+                </div>
+
+                <!-- Amenities -->
+                <div class="mb-4 pb-4" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="mb-3">
+                        <span class="kicker">📺</span> Amenidades
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">TV Satelital</label>
+                        <p>
+                            @if (Model.Tv_Satelital)
+                            {
+                                <span class="badge bg-success">✓ Disponible</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">✕ No disponible</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Maintenance -->
+                <div>
+                    <h5 class="mb-3">
+                        <span class="kicker">🔧</span> Mantenimiento
+                    </h5>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted-custom">Pendientes de Mantenimiento</label>
+                        @if (!string.IsNullOrWhiteSpace(Model.PendientesMantenimiento))
+                        {
+                            <p class="text-break">@Model.PendientesMantenimiento</p>
+                        }
+                        else
+                        {
+                            <p class="text-muted-custom">--</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-grid gap-2 d-sm-flex">
+                <a href="@Url.Action("Edit", "Habitaciones", new { id = Model.NumeroHabitacion })" class="btn btn-primary flex-sm-grow-1">
+                    ✏️ Editar
+                </a>
+                <a href="@Url.Action("Delete", "Habitaciones", new { id = Model.NumeroHabitacion })" class="btn btn-outline-custom flex-sm-grow-1">
+                    🗑️ Eliminar
+                </a>
+                <a href="@Url.Action("Index", "Habitaciones")" class="btn btn-ghost flex-sm-grow-1">
+                    ← Volver al listado
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

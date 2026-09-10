@@ -1,0 +1,330 @@
+@model AccessDB.Models.Reservacion
+@using System.Globalization
+@using AccessDB.Models
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <h1>Registrar Nueva Reservación</h1>
+                <p class="text-muted-custom">Complete todos los campos obligatorios marcados con <span class="text-danger">*</span></p>
+            </div>
+
+            <!-- Messages -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>⚠️ Errores en el formulario:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Form Section -->
+            <div class="surface p-4">
+                <form asp-action="Create" asp-controller="Reservacion" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <!-- Basic Information Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">🏨</span> Información Básica
+                        </h5>
+
+                        <!-- Código (se genera automáticamente si se deja vacío) -->
+                        <div class="mb-3">
+                            <label asp-for="CodigoReserva" class="form-label"></label>
+                            <input asp-for="CodigoReserva" class="form-control" />
+                            <span asp-validation-for="CodigoReserva" class="text-danger"></span>
+                        </div>
+
+                        <!-- Clientes registrados -->
+                        <div class="mb-3">
+                            <label asp-for="IdCliente" class="form-label">
+                                Cliente <span class="text-danger">*</span>
+                            </label>
+                            @{ var clientes = ViewData["Cliente"] as List<Cliente> ?? new List<Cliente>();
+                               var estadosReservacion = ViewData["EstadosReserva"] as List<EstadoReserva> ?? new List<EstadoReserva>(); }
+                            <select asp-for="IdCliente" class="form-control" required>
+                                <option value="">-- Selecciona --</option>
+                                @foreach (var cli in clientes)
+                                {
+                                    <option value="@cli.Id">@($"{cli.Nombre} {cli.PrimerApellido} {cli.SegundoApellido}".Trim()) (@cli.Cedula)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="IdCliente" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Habitaciones registrados -->
+                        <div class="mb-3">
+                            <label asp-for="IdHabitacion" class="form-label">
+                                Habitación <span class="text-danger">*</span>
+                            </label>
+                            @{ var habitaciones = ViewData["Habitacion"] as List<Habitacion> ?? new List<Habitacion>(); }
+                            <select asp-for="IdHabitacion" class="form-control" required>
+                                <option value="">-- Selecciona --</option>
+                               @foreach (var habitacion in habitaciones)
+                                {
+                                    <option value="@habitacion.Id"
+                                            data-tarifa="@habitacion.TarifaxNoche.ToString(CultureInfo.InvariantCulture)">
+                                        @habitacion.Id - @habitacion.TarifaxNoche.ToString("C", new CultureInfo("en-US"))
+
+                                    </option>
+                                }
+                            </select>
+                            <span asp-validation-for="IdHabitacion" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">📅</span> Fecha de ingreso y salida
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FechaIngreso" class="form-label">Fecha de ingreso <span class="text-danger">*</span></label>
+                                <input asp-for="FechaIngreso" type="date" class="form-control" required />
+                                <span asp-validation-for="FechaIngreso" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FechaSalida" class="form-label">Fecha de salida <span class="text-danger">*</span></label>
+                                <input asp-for="FechaSalida" type="date" class="form-control" required />
+                                <span asp-validation-for="FechaSalida" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                    <!-- Extra: Solicitudes y Descuento -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">📝</span> Solicitudes y Descuento
+                        </h5>
+
+                        <div class="mb-3">
+                                <label asp-for="Solicitudes" class="form-label">Solicitudes especiales</label>
+                                <textarea asp-for="Solicitudes" class="form-control" rows="3" maxlength="300"></textarea>
+                                <span asp-validation-for="Solicitudes" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descuento" class="form-label">Porcentaje de descuento</label>
+                                <input asp-for="Descuento" type="number" min="0" max="100" class="form-control" />
+                                <span asp-validation-for="Descuento" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Mostrar tarifa calculada y monto total (solo como referencia) -->
+                        <div class="mb-3">
+                            <label class="form-label">Tarifa estimada</label>
+                            <p id="tarifaDisplay" class="h5 text-primary">--</p>
+                            <input type="hidden" asp-for="TarifaReservacion" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Monto total estimado (con IVA)</label>
+                            <p id="montoDisplay" class="h5 text-success">--</p>
+                            <input type="hidden" asp-for="Total" />
+                        </div>
+                    </div>
+
+
+                    </div>
+
+                    <!-- Amenities Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">👨‍💼</span> Cantidad de personas
+                        </h5>
+                        <label asp-for="CantidadPersonas" class="form-label">Número de personas <span class="text-danger">*</span></label>
+                        <select asp-for="CantidadPersonas" class="form-control" required>
+                            <option value="">-- Seleccione una cantidad --</option>
+                                    @for (int cant = 1; cant <= 10; cant ++)
+                                    {
+                                        <option value="@cant">@cant</option>
+                                    }
+                        </select>
+                        <span asp-validation-for="CantidadPersonas" class="text-danger small"></span>
+
+                    </div>
+
+                    <!-- Maintenance Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">🔧</span> Estado de la reservacion
+                        </h5>
+
+                        <!-- Estados -->
+                        <div class="mb-3">
+                            <select asp-for="EstadoReservacion" class="form-control" required>
+                                <option value="">-- Seleccione el estado de la reservación --</option>
+                                @foreach (var estado in estadosReservacion)
+                                {
+                                    <option value="@estado.Id">@estado.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <button type="submit" class="btn btn-primary flex-sm-grow-1">✓ Guardar Reservación</button>
+                        <a href="@Url.Action("Index", "Reservacion")" class="btn btn-outline-custom flex-sm-grow-1">✕ Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+   <script>
+    const serverDecimalSeparator = '@System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator';
+
+    function calcularEstimado() {
+        // HABITACIÓN
+        const selHabitacion = document.querySelector('[name="IdHabitacion"]');
+
+        if (!selHabitacion) {
+            console.error('No se encontró el campo IdHabitacion');
+            return;
+        }
+
+        const selectedOption = selHabitacion.selectedOptions[0];
+
+        const tarifaStr = selectedOption
+            ? selectedOption.dataset.tarifa
+            : null;
+
+        const tarifa = tarifaStr
+            ? parseFloat(tarifaStr)
+            : 0;
+
+        // FECHAS
+        const ingreso = document.querySelector('[name="FechaIngreso"]').value;
+        const salida = document.querySelector('[name="FechaSalida"]').value;
+
+        // DESCUENTO
+        const descuentoInput = document.querySelector('[name="Descuento"]');
+        const descuento = descuentoInput
+            ? parseFloat(descuentoInput.value || '0')
+            : 0;
+
+        // Validaciones
+        if (!ingreso || !salida || tarifa <= 0) {
+            document.getElementById('tarifaDisplay').innerText = '--';
+            document.getElementById('montoDisplay').innerText = '--';
+
+            document.querySelector('[name="TarifaReservacion"]').value = '';
+            document.querySelector('[name="Total"]').value = '';
+
+            return;
+        }
+
+        // FECHAS
+        const d1 = new Date(ingreso + 'T00:00:00');
+        const d2 = new Date(salida + 'T00:00:00');
+
+        const diferencia = d2 - d1;
+
+        let noches = Math.round(
+            diferencia / (1000 * 60 * 60 * 24)
+        );
+
+        if (noches <= 0) {
+            noches = 1;
+        }
+
+        // CÁLCULO
+        const tarifaTotal = tarifa * noches;
+
+        const montoDescuento =
+            tarifaTotal * (descuento / 100);
+
+        const tarifaConDesc =
+            tarifaTotal - montoDescuento;
+
+        const iva =
+            tarifaConDesc * 0.13;
+
+        const monto =
+            tarifaConDesc + iva;
+
+        // MOSTRAR EN PANTALLA
+        document.getElementById('tarifaDisplay').innerText =
+            tarifaTotal.toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD'
+            });
+
+        document.getElementById('montoDisplay').innerText =
+            monto.toLocaleString(undefined, {
+                style: 'currency',
+                currency: 'USD'
+            });
+
+        // FORMATO PARA EL SERVIDOR
+        function formatForServerNumber(val) {
+            let s = Number(val).toFixed(2);
+
+            if (serverDecimalSeparator !== '.') {
+                s = s.replace('.', serverDecimalSeparator);
+            }
+
+            return s;
+        }
+
+        // INPUTS HIDDEN
+        document.querySelector('[name="TarifaReservacion"]').value =
+            formatForServerNumber(tarifaTotal);
+
+        document.querySelector('[name="Total"]').value =
+            formatForServerNumber(monto);
+
+        console.log({
+            tarifa,
+            noches,
+            tarifaTotal,
+            descuento,
+            tarifaConDesc,
+            iva,
+            monto
+        });
+    }
+
+    // Cuando cambian habitación, fechas o descuento
+    document.addEventListener('change', function (e) {
+
+        if (
+            e.target.name === 'IdHabitacion' ||
+            e.target.name === 'FechaIngreso' ||
+            e.target.name === 'FechaSalida' ||
+            e.target.name === 'Descuento'
+        ) {
+            calcularEstimado();
+        }
+    });
+
+    // Mientras escriben el descuento
+    document.addEventListener('input', function (e) {
+
+        if (e.target.name === 'Descuento') {
+            calcularEstimado();
+        }
+    });
+
+    // Calcular también al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        calcularEstimado();
+    });
+</script>
+}

@@ -1,0 +1,170 @@
+@model AccessDB.Models.Habitacion
+@using AccessDB.Models
+
+@{
+    ViewData["Title"] = "Registrar Nueva Habitación";
+    var tiposHabitacion = ViewData["Categorias"] as List<TipoHabitacion>;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="mb-4">
+                <h1>Registrar Nueva Habitación</h1>
+                <p class="text-muted-custom">Complete todos los campos obligatorios marcados con <span class="text-danger">*</span></p>
+            </div>
+
+            <!-- Messages -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>⚠️ Errores en el formulario:</strong>
+                    <ul class="mb-0 mt-2">
+                        @foreach (var modelState in ViewData.ModelState.Values)
+                        {
+                            @foreach (var error in modelState.Errors)
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        }
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Form Section -->
+            <div class="surface p-4">
+                <form asp-action="Create" asp-controller="Habitaciones" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <!-- Basic Information Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">🏨</span> Información Básica
+                        </h5>
+
+                        <!-- Número de Habitación -->
+                        <div class="mb-3">
+                            <label asp-for="NumeroHabitacion" class="form-label">
+                                Número de Habitación <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="NumeroHabitacion" type="number" class="form-control" 
+                                   placeholder="Ej: 101" min="1" max="500" required>
+                            <span asp-validation-for="NumeroHabitacion" class="text-danger small"></span>
+                            <small class="text-muted-custom d-block mt-1">Rango: 1 a 500</small>
+                        </div>
+
+                        <!-- Tipo de Habitación -->
+                        <div class="mb-3">
+                            <label asp-for="TipoHabitacion" class="form-label">
+                                Tipo de Habitación <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="TipoHabitacion" class="form-control" required>
+                                <option value="">-- Selecciona un tipo --</option>
+                                @foreach (var tipo in tiposHabitacion)
+                                {
+                                    <option value="@tipo.Id">@tipo.Nombre</option>
+                                }
+                            </select>
+                            <span asp-validation-for="TipoHabitacion" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">💰</span> Información de Tarifa
+                        </h5>
+
+                        <!-- Tarifa por Noche -->
+                        <div class="mb-3">
+                            <label asp-for="TarifaxNoche" class="form-label">
+                                Tarifa por Noche <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="TarifaxNoche" type="text" class="form-control" 
+                                       placeholder="0.00" required>
+                            </div>
+                            <span asp-validation-for="TarifaxNoche" class="text-danger small"></span>
+                            <small class="text-muted-custom d-block mt-1">Rango: 50 a 800 dólares</small>
+                        </div>
+                    </div>
+
+                    <!-- Amenities Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">📺</span> Amenidades
+                        </h5>
+
+                        <!-- TV Satelital -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                TV Satelital <span class="text-danger">*</span>
+                            </label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="Tv_Satelital" id="tvSi" 
+                                       value="true" required>
+                                <label class="btn btn-outline-custom flex-grow-1" for="tvSi">
+                                    ✓ Sí
+                                </label>
+
+                                <input type="radio" class="btn-check" name="Tv_Satelital" id="tvNo" 
+                                       value="false" required>
+                                <label class="btn btn-outline-custom flex-grow-1" for="tvNo">
+                                    ✕ No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Maintenance Section -->
+                    <div class="form-section mb-4">
+                        <h5 class="mb-3">
+                            <span class="kicker">🔧</span> Mantenimiento
+                        </h5>
+
+                        <!-- Pendientes de Mantenimiento -->
+                        <div class="mb-3">
+                            <label asp-for="PendientesMantenimiento" class="form-label">
+                                Pendientes de Mantenimiento
+                            </label>
+                            <textarea asp-for="PendientesMantenimiento" class="form-control" rows="3" 
+                                      placeholder="Ej: Reparar cortina, cambiar bombilla, nada" maxlength="500"></textarea>
+                            <span asp-validation-for="PendientesMantenimiento" class="text-danger small"></span>
+                            <small class="text-muted-custom d-block mt-1">Máximo 500 caracteres</small>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-sm-flex">
+                        <button type="submit" class="btn btn-primary flex-sm-grow-1">
+                            ✓ Guardar Habitación
+                        </button>
+                        <a href="@Url.Action("Index", "Habitaciones")" class="btn btn-outline-custom flex-sm-grow-1">
+                            ✕ Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Permitir solo números y decimales en tarifa
+        document.querySelector('[name="TarifaxNoche"]').addEventListener("input", function (e) {
+            e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+            const parts = e.target.value.split('.');
+            if (parts.length > 2) {
+                e.target.value = parts[0] + '.' + parts[1];
+            }
+        });
+    </script>
+}

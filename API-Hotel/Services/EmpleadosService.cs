@@ -30,6 +30,7 @@ namespace API_Hotel.Services
             var empleado = await _empleadosRepository.GetByIdCardAsync(cedula);
             if(empleado == null)
             {
+
                 throw new Exception("Empleado no encontrado");
             }
             return empleado;
@@ -37,12 +38,22 @@ namespace API_Hotel.Services
 
         public async Task<Empleado> CreateAsync(Empleado empleado)
         {
-            var existingEmpleado = await _empleadosRepository.GetByIdCardAsync(empleado.Cedula);
-            if(existingEmpleado != null)
+            try
             {
-                throw new Exception("Este número de cédula ya está registrado");
+                var existingEmpleado = await _empleadosRepository.GetByIdCardAsync(empleado.Cedula);
+                if (existingEmpleado != null)
+                {
+                    throw new InvalidOperationException("Este número de cédula ya está registrado");
+                }
+                return await _empleadosRepository.CreateAsync(empleado);
             }
-            return await _empleadosRepository.CreateAsync(empleado);
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch (Exception ex) {
+                throw new Exception("Error al agregar empleado", ex);
+            }
         }
 
         public async Task UpdateAsync(Empleado empleado)

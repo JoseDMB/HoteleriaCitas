@@ -28,9 +28,6 @@ namespace Proyecto1.Controllers
             return View(empleados);
         }
 
-
-
-     
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -49,19 +46,58 @@ namespace Proyecto1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Empleado empleado)
         {
-            if (ModelState.IsValid)
+            // Basic server-side validation: re-populate view data when returning the view
+            if (!ModelState.IsValid)
             {
+                var provincias = await _ubicacionService.GetProvinciasAsync();
+                var categorias = await _categoriaApiService.ObtenerTodasAsync();
+                ViewBag.Categorias = categorias;
+                ViewBag.Provincias = provincias;
+                ViewData["Categorias"] = categorias;
+                ViewData["Provincias"] = provincias;
+                return View(empleado);
+            }
+
+            // Prevent duplicate cédula earlier so we can add a model error and re-render the view
+            var existente = await _empleadoService.ObtenerPorCedulaAsync(empleado.Cedula);
+            if (existente != null)
+            {
+                ModelState.AddModelError(nameof(empleado.Cedula), $"Ya existe un empleado con la cédula {empleado.Cedula}.");
+                var provincias = await _ubicacionService.GetProvinciasAsync();
+                var categorias = await _categoriaApiService.ObtenerTodasAsync();
+                ViewBag.Categorias = categorias;
+                ViewBag.Provincias = provincias;
+                ViewData["Categorias"] = categorias;
+                ViewData["Provincias"] = provincias;
+                return View(empleado);
+            }
+
+            try
+            {
+                var provincias = await _ubicacionService.GetProvinciasAsync();
+                var categorias = await _categoriaApiService.ObtenerTodasAsync();
+                ViewBag.Categorias = categorias;
+                ViewBag.Provincias = provincias;
+                ViewData["Categorias"] = categorias;
+                ViewData["Provincias"] = provincias;
                 await _empleadoService.CrearAsync(empleado);
                 return RedirectToAction("Index");
             }
+            catch(InvalidOperationException ex)
+            {
+                // The service layer already bubbles up an error about duplicate cédula or other validation
+                ModelState.AddModelError(nameof(empleado.Cedula), ex.Message);
+                var provincias = await _ubicacionService.GetProvinciasAsync();
+                var categorias = await _categoriaApiService.ObtenerTodasAsync();
+                ViewBag.Categorias = categorias;
+                ViewBag.Provincias = provincias;
+                ViewData["Categorias"] = categorias;
+                ViewData["Provincias"] = provincias;
+                return View(empleado);
+            }
             // Si hay errores, volver a poblar datos necesarios para la vista
-            var provincias = await _ubicacionService.GetProvinciasAsync();
-            var categorias = await _categoriaApiService.ObtenerTodasAsync();
-            ViewBag.Categorias = categorias;
-            ViewBag.Provincias = provincias;
-            ViewData["Categorias"] = categorias;
-            ViewData["Provincias"] = provincias;
-            return View(empleado);
+            
+         
         }
 
         [HttpGet]

@@ -37,19 +37,27 @@ namespace MVC.Services
         public async Task<Empleado> CrearAsync(Empleado empleado)
         {
             var response = await _httpClient.PostAsJsonAsync("api/EmpleadosApi", empleado);
-            if (response.IsSuccessStatusCode)
-                return await response.Content.ReadFromJsonAsync<Empleado>();
+
+            if (response.IsSuccessStatusCode) {
+                return empleado;
+            }
 
             var content = await response.Content.ReadAsStringAsync();
+            string mensaje = $"Ya existe un empleado con la cedula: {empleado.Cedula}";
+
             try
             {
-                var doc = JsonDocument.Parse(content);
-                if (doc.RootElement.TryGetProperty("error", out var err))
-                    throw new InvalidOperationException(err.GetString());
+                var error = JsonSerializer.Deserialize<ErrorResponse>(content);
+                if (!string.IsNullOrEmpty(error?.Error))
+                {
+                    mensaje = error.Error;
+                }
             }
-            catch (JsonException) { }
+            catch
+            {
 
-            throw new InvalidOperationException(content);
+            }
+            throw new InvalidOperationException(mensaje);
         }
         public async Task ActualizarAsync(Empleado empleado)
         {
@@ -90,6 +98,11 @@ namespace MVC.Services
             var response = await _httpClient.GetAsync("api/EmpleadosApi/total");
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<int>();
+        }
+
+        public class ErrorResponse
+        {
+            public string? Error { get; set; }
         }
     }
 }

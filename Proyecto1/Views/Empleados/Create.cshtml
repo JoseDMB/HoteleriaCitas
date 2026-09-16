@@ -221,6 +221,9 @@
 </div>
 @section Scripts{
     <script>
+        const provinciaSeleccionada = '@(Model != null ? Model.ProvinciaId.ToString() : "")';
+        const cantonSeleccionado = '@(Model != null ? Model.CantonId.ToString() : "")';
+        const distritoSeleccionado = '@(Model != null ? Model.DistritoId.ToString() : "")';
         const provinciaSelect = document.getElementById("provinciaSelect");
         const cantonSelect = document.getElementById("cantonSelect");
         const distritoSelect = document.getElementById("distritoSelect");
@@ -265,6 +268,48 @@
 
                     cantonSelect.appendChild(option);
                 });
+
+        // On load: if there are preselected values (e.g., after server validation error),
+        // fetch and populate the dependent selects and keep the selected values.
+        (async function restoreSelections() {
+            try {
+                if (provinciaSeleccionada) {
+                    // ensure provinciaSelect shows the selected value (TagHelper will usually do this),
+                    // then populate cantones for that provincia
+                    const resp = await fetch(`/Empleados/ObtenerCantones?provinciaId=${provinciaSeleccionada}`);
+                    if (resp.ok) {
+                        const cantones = await resp.json();
+                        cantonSelect.innerHTML = '<option value="">-- Selecciona un cantón --</option>';
+                        cantones.forEach(canton => {
+                            const option = document.createElement('option');
+                            option.value = canton.id;
+                            option.textContent = canton.nombre;
+                            if (cantonSeleccionado && canton.id == cantonSeleccionado) option.selected = true;
+                            cantonSelect.appendChild(option);
+                        });
+                        cantonSelect.disabled = false;
+
+                        if (cantonSeleccionado) {
+                            const r2 = await fetch(`/Empleados/ObtenerDistritos?cantonId=${cantonSeleccionado}`);
+                            if (r2.ok) {
+                                const distritos = await r2.json();
+                                distritoSelect.innerHTML = '<option value="">-- Selecciona un distrito --</option>';
+                                distritos.forEach(distrito => {
+                                    const option = document.createElement('option');
+                                    option.value = distrito.id;
+                                    option.textContent = distrito.nombre;
+                                    if (distritoSeleccionado && distrito.id == distritoSeleccionado) option.selected = true;
+                                    distritoSelect.appendChild(option);
+                                });
+                                distritoSelect.disabled = false;
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Error restoring location selections', e);
+            }
+        })();
 
                 cantonSelect.disabled = false;
 
@@ -326,17 +371,77 @@
 
     <script>
         // Formatear cédula automáticamente
-        document.getElementById("Cedula").addEventListener("input", function(e) {
-            let valor = e.target.value.replace(/[^\d]/g, "");
-            if (valor.length <= 1) {
-                e.target.value = valor;
-            } else if (valor.length <= 5) {
-                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1);
-            } else if (valor.length <= 9) {
-                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5);
-            } else {
-                e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5, 9);
+        const cedulaInput = document.getElementById("Cedula");
+        if (cedulaInput) {
+            cedulaInput.addEventListener("input", function(e) {
+                let valor = e.target.value.replace(/[^\d]/g, "");
+                if (valor.length <= 1) {
+                    e.target.value = valor;
+                } else if (valor.length <= 5) {
+                    e.target.value = valor.substring(0, 1) + "-" + valor.substring(1);
+                } else if (valor.length <= 9) {
+                    e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5);
+                } else {
+                    e.target.value = valor.substring(0, 1) + "-" + valor.substring(1, 5) + "-" + valor.substring(5, 9);
+                }
+            });
+        }
+    </script>
+
+    <script>
+        // Safety restore script in case previous script failed to populate selects correctly
+        (async function () {
+            try {
+                // read model values safely
+                const provinciaRaw = '@(Model != null ? Model.ProvinciaId.ToString() : "")';
+                const cantonRaw = '@(Model != null ? Model.CantonId.ToString() : "")';
+                const distritoRaw = '@(Model != null ? Model.DistritoId.ToString() : "")';
+                const provinciaId = parseInt(provinciaRaw, 10) || 0;
+                const cantonId = parseInt(cantonRaw, 10) || 0;
+                const distritoId = parseInt(distritoRaw, 10) || 0;
+
+                const provinciaSelect = document.getElementById('provinciaSelect');
+                const cantonSelect = document.getElementById('cantonSelect');
+                const distritoSelect = document.getElementById('distritoSelect');
+
+                if (!provinciaSelect || !cantonSelect || !distritoSelect) return;
+
+                if (provinciaId > 0) {
+                    // ensure provinciaSelect has the selected value (TagHelper should set it)
+                    // fetch cantones and set selected canton
+                    const r = await fetch(`/Empleados/ObtenerCantones?provinciaId=${provinciaId}`);
+                    if (r.ok) {
+                        const cantones = await r.json();
+                        cantonSelect.innerHTML = '<option value="">-- Selecciona un cantón --</option>';
+                        cantones.forEach(c => {
+                            const opt = document.createElement('option');
+                            opt.value = c.id;
+                            opt.textContent = c.nombre;
+                            if (cantonId > 0 && Number(c.id) === cantonId) opt.selected = true;
+                            cantonSelect.appendChild(opt);
+                        });
+                        cantonSelect.disabled = false;
+
+                        if (cantonId > 0) {
+                            const r2 = await fetch(`/Empleados/ObtenerDistritos?cantonId=${cantonId}`);
+                            if (r2.ok) {
+                                const distritos = await r2.json();
+                                distritoSelect.innerHTML = '<option value="">-- Selecciona un distrito --</option>';
+                                distritos.forEach(d => {
+                                    const opt = document.createElement('option');
+                                    opt.value = d.id;
+                                    opt.textContent = d.nombre;
+                                    if (distritoId > 0 && Number(d.id) === distritoId) opt.selected = true;
+                                    distritoSelect.appendChild(opt);
+                                });
+                                distritoSelect.disabled = false;
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('restore script failed', e);
             }
-        });
+        })();
     </script>
 }

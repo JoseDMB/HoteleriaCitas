@@ -36,7 +36,7 @@ namespace MVC.Services
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<Habitacion>();
         }
-
+        //Seguir con las validaciones de ID repetidos y sus try & catch
         public async Task<Habitacion> CrearAsync(Habitacion habitacion)
         {
             var response = await _httpClient.PostAsJsonAsync("api/HabitacionesApi", habitacion);

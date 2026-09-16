@@ -52,7 +52,7 @@ namespace API_Hotel.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Empleado>> Create([FromBody] Empleado empleado)
+        public async Task<IActionResult> Create([FromBody] Empleado empleado)
         {
             if (!ModelState.IsValid) 
                 return BadRequest(ModelState);
@@ -63,15 +63,16 @@ namespace API_Hotel.Controllers
             }
             catch (KeyNotFoundException ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { error = ex.Message, model = empleado });
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(new { error = ex.Message });
+                // Return a field-level validation error for Cedula and include the submitted model
+                return BadRequest(new { errors = new { Cedula = ex.Message }, model = empleado });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new { error = ex.Message, model = empleado });
             }
 
         }

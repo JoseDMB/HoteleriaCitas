@@ -36,12 +36,32 @@ namespace MVC.Services
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadFromJsonAsync<Habitacion>();
         }
+
         //Seguir con las validaciones de ID repetidos y sus try & catch
         public async Task<Habitacion> CrearAsync(Habitacion habitacion)
         {
             var response = await _httpClient.PostAsJsonAsync("api/HabitacionesApi", habitacion);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<Habitacion>();
+            if (response.IsSuccessStatusCode)
+            {
+                return habitacion;
+            }
+            
+            var contenido = await response.Content.ReadAsStringAsync();
+            string mensaje = $"Ya existe una habitacion con el numero: {habitacion.NumeroHabitacion}";
+
+            try
+            {
+                var error = JsonSerializer.Deserialize<ErrorResponse>(contenido);
+                if (!string.IsNullOrEmpty(error?.Error))
+                {
+                    mensaje = error.Error;
+                }
+            }
+            catch
+            {
+                // Si no se puede leer el JSON, usamos el mensaje genérico
+            }
+            throw new InvalidOperationException(mensaje);
         }
 
         public async Task ActualizarAsync(Habitacion habitacion)

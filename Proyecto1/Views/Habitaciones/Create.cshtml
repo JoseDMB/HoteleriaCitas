@@ -60,12 +60,9 @@
                             <label asp-for="TipoHabitacion" class="form-label">
                                 Tipo de Habitación <span class="text-danger">*</span>
                             </label>
-                            <select asp-for="TipoHabitacion" class="form-control" required>
+                            <select asp-for="TipoHabitacion" class="form-control" required
+                                    asp-items="@(new SelectList(tiposHabitacion, "Id", "Nombre", Model?.TipoHabitacion))">
                                 <option value="">-- Selecciona un tipo --</option>
-                                @foreach (var tipo in tiposHabitacion)
-                                {
-                                    <option value="@tipo.Id">@tipo.Nombre</option>
-                                }
                             </select>
                             <span asp-validation-for="TipoHabitacion" class="text-danger small"></span>
                         </div>
@@ -104,14 +101,12 @@
                                 TV Satelital <span class="text-danger">*</span>
                             </label>
                             <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check" name="Tv_Satelital" id="tvSi" 
-                                       value="true" required>
+                                <input asp-for="Tv_Satelital" type="radio" class="btn-check" id="tvSi" value="true" required />
                                 <label class="btn btn-outline-custom flex-grow-1" for="tvSi">
                                     ✓ Sí
                                 </label>
 
-                                <input type="radio" class="btn-check" name="Tv_Satelital" id="tvNo" 
-                                       value="false" required>
+                                <input asp-for="Tv_Satelital" type="radio" class="btn-check" id="tvNo" value="false" required />
                                 <label class="btn btn-outline-custom flex-grow-1" for="tvNo">
                                     ✕ No
                                 </label>

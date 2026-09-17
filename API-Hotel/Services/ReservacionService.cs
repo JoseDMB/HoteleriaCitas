@@ -82,10 +82,10 @@ namespace API_Hotel.Services
                     throw new KeyNotFoundException(
                         $"No se encontró la habitación con ID {reservacion.IdHabitacion}");
                 }
-                var disponible = await HabitacionDisponibleAsync(reservacion.IdHabitacion, reservacion.FechaIngreso, reservacion.FechaSalida);
-                if (!disponible)
+                var conflicto = await _reservacionRepository.ObtenerConflictoAsync(reservacion.IdHabitacion, reservacion.FechaIngreso, reservacion.FechaSalida);
+                if (conflicto != null)
                 {
-                    throw new InvalidOperationException($"La habitación {reservacion.IdHabitacion} no está disponible de {reservacion.FechaIngreso} a {reservacion.FechaSalida}.");
+                    throw new InvalidOperationException($"La habitación {reservacion.IdHabitacion} se encuentra ocupada del {conflicto.FechaIngreso:dd/MM/yyyy} al {conflicto.FechaSalida:dd/MM/yyyy}.");
                 }
 
                 //CALCULO TOTAL
@@ -124,9 +124,10 @@ namespace API_Hotel.Services
                 {
                     throw new ArgumentException("La fecha de ingreso debe ser anterior a la fecha de salida.");
                 }
-                if (!await HabitacionDisponibleAsync(reservacion.IdHabitacion, reservacion.FechaIngreso, reservacion.FechaSalida, reservacion.Id))
+                var conflicto = await _reservacionRepository.ObtenerConflictoAsync(reservacion.IdHabitacion, reservacion.FechaIngreso, reservacion.FechaSalida, reservacion.Id);
+                if (conflicto != null)
                 {
-                    //throw new InvalidOperationException($"La habitación{reservacion.} esta ocupada de {}.");
+                    throw new InvalidOperationException($"La habitación {reservacion.IdHabitacion} se encuentra ocupada del {conflicto.FechaIngreso:dd/MM/yyyy} al {conflicto.FechaSalida:dd/MM/yyyy}.");
                 }
                 reservacionExistente.CodigoReserva = reservacion.CodigoReserva;
                 reservacionExistente.IdCliente = reservacion.IdCliente;

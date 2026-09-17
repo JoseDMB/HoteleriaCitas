@@ -11,12 +11,14 @@ namespace Proyecto1.Controllers
         private readonly IClienteApiService _clienteService;
         private readonly IHabitacionService _habitacionesService;
         private readonly IEstadoApiService _estadoReservacionService;
-        public ReservacionController(IReservacionApiService reservacionService, IClienteApiService clienteService, IHabitacionService habitacionService, IEstadoApiService estadoResevService)
+        private readonly ITipoHabitacionService _tipoHabitacionService;
+        public ReservacionController(IReservacionApiService reservacionService, IClienteApiService clienteService, IHabitacionService habitacionService, IEstadoApiService estadoResevService, ITipoHabitacionService tipoHabitacionService)
         {
             _reservacionService = reservacionService;
             _clienteService = clienteService;
             _habitacionesService = habitacionService;
             _estadoReservacionService = estadoResevService;
+            _tipoHabitacionService = tipoHabitacionService;
         }
 
 
@@ -42,6 +44,7 @@ namespace Proyecto1.Controllers
             ViewData["Cliente"] = await _clienteService.ObtenerTodosAsync().ConfigureAwait(false);
             ViewData["Habitacion"] = await _habitacionesService.ObtenerTodosAsync().ConfigureAwait(false);
             ViewData["EstadosReserva"] = await _estadoReservacionService.ObtenerTodosAsync();
+            ViewData["TiposHabitacion"] = await _tipoHabitacionService.ObtenerTodasAsync().ConfigureAwait(false);
             return View();
         }
 
@@ -65,6 +68,7 @@ namespace Proyecto1.Controllers
             ViewData["Cliente"] = await _clienteService.ObtenerTodosAsync().ConfigureAwait(false);
             ViewData["Habitacion"] = await _habitacionesService.ObtenerTodosAsync().ConfigureAwait(false);
             ViewData["EstadosReserva"] = await _estadoReservacionService.ObtenerTodosAsync().ConfigureAwait(false);
+            ViewData["TiposHabitacion"] = await _tipoHabitacionService.ObtenerTodasAsync().ConfigureAwait(false);
 
             return View(reservacion);
         }

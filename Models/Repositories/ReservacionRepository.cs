@@ -56,6 +56,16 @@ namespace AccessDB.Repositories
             );
         }
 
+        public async Task<Reservacion> ObtenerConflictoAsync(int idHabitacion, DateTime inicio, DateTime fin, int? excludeReservacionId = null)
+        {
+            return await _context.Reservaciones.AsNoTracking().FirstOrDefaultAsync(r =>
+                r.IdHabitacion == idHabitacion &&
+                (!excludeReservacionId.HasValue || r.Id != excludeReservacionId.Value) &&
+                inicio < r.FechaSalida &&
+                fin > r.FechaIngreso
+            );
+        }
+
         public async Task<bool> ExisteReservacionPorClienteAsync(int idCliente)
         {
             return await _context.Reservaciones.AnyAsync(r => r.IdCliente == idCliente);

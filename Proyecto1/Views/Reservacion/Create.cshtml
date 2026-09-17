@@ -68,14 +68,15 @@
                             <label asp-for="IdHabitacion" class="form-label">
                                 Habitación <span class="text-danger">*</span>
                             </label>
-                            @{ var habitaciones = ViewData["Habitacion"] as List<Habitacion> ?? new List<Habitacion>(); }
+                            @{ var habitaciones = ViewData["Habitacion"] as List<Habitacion> ?? new List<Habitacion>();
+                               var tipos = ViewData["TiposHabitacion"] as List<TipoHabitacion> ?? new List<TipoHabitacion>(); }
                             <select asp-for="IdHabitacion" class="form-control" required>
                                 <option value="">-- Selecciona --</option>
                                @foreach (var habitacion in habitaciones)
                                 {
-                                    <option value="@habitacion.Id"
-                                            data-tarifa="@habitacion.TarifaxNoche.ToString(CultureInfo.InvariantCulture)">
-                                        @habitacion.Id - @habitacion.TarifaxNoche.ToString("C", new CultureInfo("en-US"))
+                                    var tipoNombre = tipos.FirstOrDefault(t => t.Id == habitacion.TipoHabitacion)?.Nombre ?? habitacion.TipoHabitacion.ToString(); 
+                                    <option value="@habitacion.Id" data-tarifa="@habitacion.TarifaxNoche.ToString(CultureInfo.InvariantCulture)">
+                                        @habitacion.Id - @habitacion.TarifaxNoche.ToString("C", new CultureInfo("en-US")) - @tipoNombre
 
                                     </option>
                                 }

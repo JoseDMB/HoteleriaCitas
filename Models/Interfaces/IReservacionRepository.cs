@@ -12,6 +12,7 @@ namespace AccessDB
         Task EliminarAsync(int id);
         Task<int> ObtenerTotalAsync();
         Task<bool> HabitacionDisponibleAsync(int numeroHabitacion, DateTime inicio, DateTime fin, int? excludeReservacionId = null);
+        Task<Reservacion> ObtenerConflictoAsync(int numeroHabitacion, DateTime inicio, DateTime fin, int? excludeReservacionId = null);
         Task<bool> ExisteReservacionPorClienteAsync(int idCliente);
         Task<bool> ExisteReservacionPorHabitacionAsync(int idHabitacion);
     }

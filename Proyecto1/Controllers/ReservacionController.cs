@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using AccessDB.Models;
 using MVC.Interfaces;
 
@@ -25,18 +28,42 @@ namespace Proyecto1.Controllers
 
         public async Task<IActionResult> Index(string buscar = null)
         {
-            var reservaciones = await _reservacionService.ObtenerTodosAsync();
+            // Load base data
+            var reservaciones = await _reservacionService.ObtenerTodosAsync().ConfigureAwait(false);
+            var clientes = await _clienteService.ObtenerTodosAsync().ConfigureAwait(false);
+            var habitaciones = await _habitacionesService.ObtenerTodosAsync().ConfigureAwait(false);
+            var estados = await _estadoReservacionService.ObtenerTodosAsync().ConfigureAwait(false);
 
+            // Build lookup dictionaries
+            var clientesById = clientes.ToDictionary(c => c.Id);
+            var habitacionesById = habitaciones.ToDictionary(h => h.Id);
+            var estadosById = estados.ToDictionary(e => e.Id);
+
+            // Optional filtering
             if (!string.IsNullOrWhiteSpace(buscar))
             {
                 reservaciones = reservaciones
                     .Where(r => r.CodigoReserva?.Contains(buscar, StringComparison.OrdinalIgnoreCase) == true)
                     .ToList();
-
                 ViewData["BusquedaTermino"] = buscar;
             }
 
-            return View(reservaciones);
+            // Project to view model
+            var vm = reservaciones.Select(r => new Proyecto1.ViewModels.ReservacionIndexViewModel
+            {
+                Id = r.Id,
+                CodigoReserva = r.CodigoReserva,
+                ClienteNombre = clientesById.TryGetValue(r.IdCliente, out var c) ? $"{c?.Nombre} {c?.PrimerApellido} {c?.SegundoApellido}".Trim() : string.Empty,
+                HabitacionNumero = habitacionesById.TryGetValue(r.IdHabitacion, out var h) ? h.NumeroHabitacion.ToString() : r.IdHabitacion.ToString(),
+                FechaIngreso = r.FechaIngreso,
+                FechaSalida = r.FechaSalida,
+                TarifaReservacion = r.TarifaReservacion,
+                Total = r.Total,
+                EstadoReservacionId = r.EstadoReservacion,
+                EstadoNombre = estadosById.TryGetValue(r.EstadoReservacion, out var es) ? es.Nombre : r.EstadoReservacion.ToString()
+            }).ToList();
+
+            return View(vm);
         }
 
         public async Task<IActionResult> Create()
@@ -158,10 +185,11 @@ namespace Proyecto1.Controllers
             if (reservacion != null)
             {
                 await _reservacionService.EliminarAsync(id).ConfigureAwait(false);
-                TempData["Exito"] = $"Reservacion eliminada exitosamente";
+                TempData["Exito"] = $"Reservación {reservacion.CodigoReserva} eliminada correctamente.";
+                return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
     }
 }

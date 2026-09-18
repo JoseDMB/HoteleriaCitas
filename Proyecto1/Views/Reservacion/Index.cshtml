@@ -1,11 +1,9 @@
-@model List<AccessDB.Models.Reservacion>
-@using AccessDB.Models
+@model List<Proyecto1.ViewModels.ReservacionIndexViewModel>
+@using System
+@using System.Linq
 @{
     ViewData["Title"] = "Reservaciones";
 }
-
-@inject MVC.Interfaces.IClienteApiService clienteService
-@inject MVC.Interfaces.IHabitacionService habitacionService
 
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -17,6 +15,7 @@
         </a>
     </div>
 
+    
     @if (TempData["Exito"] != null)
     {
         <div class="alert alert-success">@TempData["Exito"]</div>
@@ -35,24 +34,24 @@
                     <th>Habitación</th>
                     <th>Fechas</th>
                     <th>Tarifa</th>
-                    <th>Monto Total</th>
+                    <th>Monto Total(IVA)</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
+
                 @foreach (var r in Model)
                 {
                     <tr>
                         <td><code>@r.CodigoReserva</code></td>
-                        <td>@{ var c = await clienteService.ObtenerPorIdAsync(r.IdCliente); }@($"{c?.Nombre} {c?.PrimerApellido} {c?.SegundoApellido}".Trim())
-                        </td>
-                        <td>@{ var h = await habitacionService.ObtenerPorIdAsync(r.IdHabitacion); }@(h?.NumeroHabitacion.ToString() ?? r.IdHabitacion.ToString())</td>
+                        <td>@r.ClienteNombre</td>
+                        <td>@r.HabitacionNumero</td>
                         <td><small>@r.FechaIngreso.ToString("dd/MM/yyyy") - @r.FechaSalida.ToString("dd/MM/yyyy")</small></td>
-                        <td>@r.TarifaReservacion.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
-                        <td>@r.Total.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
-                        <td>@r.EstadoReservacion.ToString()</td>
-                        <td>
+                        <td>@r.TarifaReservacion.ToString("C", new System.Globalization.CultureInfo("es-CR"))</td>
+                        <td>@r.Total.ToString("C", new System.Globalization.CultureInfo("es-CR"))</td>
+                        <td>@r.EstadoNombre</td>
+                          <td>
                             <a href="@Url.Action("Details", "Reservacion", new { id = r.Id })" class="btn btn-sm btn-outline-custom">Ver</a>
                             <a href="@Url.Action("Edit", "Reservacion", new { id = r.Id })" class="btn btn-sm btn-outline-custom">Editar</a>
                             <a href="@Url.Action("Delete", "Reservacion", new { id = r.Id })" class="btn btn-sm btn-outline-custom">Eliminar</a>
